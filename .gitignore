@@ -23,23 +23,45 @@ wheels/
 # Ambiente Virtual
 venv/
 ENV/
+.venv/
+.env
+.env.*
 
-# Coverage
+# Coverage e Testes
 .coverage
 coverage.xml
 htmlcov/
-
-# VSCode
-.vscode/
-*.code-workspace
-
-# Arquivos de dados
-*.json
-!test_data/*.json
-
-# Logs
-*.log
-
-# Cache
 .pytest_cache/
 .mypy_cache/
+.tox/
+nosetests.xml
+coverage.xml
+
+# IDEs e Editores
+.vscode/
+*.code-workspace
+.idea/
+*.swp
+*.swo
+*~
+
+# Arquivos de dados e configuração
+*.json
+!test_data/*.json
+*.yaml
+*.yml
+!config/*.yml
+
+# Logs e Cache
+*.log
+logs/
+.cache/
+temp/
+
+# Documentação
+docs/_build/
+site/
+
+# Arquivos do Sistema
+.DS_Store
+Thumbs.db
