@@ -9,7 +9,7 @@ from kivy.clock import Clock
 from decimal import Decimal, InvalidOperation
 from .portfolio import Portfolio
 
-class CryptoControlUI(BoxLayout):
+class CryptoAppUI(BoxLayout):
     def __init__(self, portfolio=None, **kwargs):
         super().__init__(**kwargs)
         self.portfolio = portfolio

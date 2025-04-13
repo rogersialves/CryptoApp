@@ -2,35 +2,33 @@ from setuptools import setup, find_packages
 
 setup(
     name="cryptoapp",
-    version="0.1",
+    version="0.1.0",
     description="Aplicativo para controle de carteira de criptomoedas",
     author="Seu Nome",
     author_email="seu.email@exemplo.com",
     license='MIT',
     packages=find_packages(),
     install_requires=[
-        'kivy>=2.2.1',
-        'pytest>=7.4.3',
-        'pytest-cov>=4.1.0',  # Para cobertura de testes
-        'python-dotenv>=1.0.0',
-        'requests>=2.31.0',   # Para futuras chamadas de API
-        'pandas>=2.1.0',      # Para análise de dados
+        "kivy>=2.0.0",
+        "kivymd>=1.1.1",
+        "requests>=2.26.0",
+        "python-binance>=1.0.15"
     ],
     extras_require={
-        'dev': [
-            'black',          # Formatador de código
-            'flake8',        # Linter
-            'isort',         # Organizador de imports
-            'mypy',          # Verificador de tipos
+        "dev": [
+            "black",
+            "flake8",
+            "isort",
+            "mypy",
         ],
-        'test': [
-            'pytest-mock',    # Para mock em testes
-            'pytest-asyncio', # Para testes assíncronos
+        "test": [
+            "pytest>=6.0",
+            "pytest-cov>=2.0",
         ],
     },
     entry_points={
-        'console_scripts': [
-            'cryptoapp=src.main:main',
+        "console_scripts": [
+            "cryptoapp=src.main:main",
         ],
     },
     python_requires='>=3.8',

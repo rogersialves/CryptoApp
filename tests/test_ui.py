@@ -2,7 +2,7 @@ import pytest
 from kivy.clock import Clock
 from kivy.base import EventLoop
 from decimal import Decimal
-from src.ui import CryptoControlUI
+from src.ui import CryptoAppUI
 from src.portfolio import Portfolio
 
 @pytest.fixture
@@ -10,7 +10,7 @@ def app():
     """Fixture que fornece uma instância da UI"""
     EventLoop.ensure_window()
     portfolio = Portfolio("test_ui.json")
-    return CryptoControlUI(portfolio=portfolio)
+    return CryptoAppUI(portfolio=portfolio)
 
 def test_ui_initialization(app):
     """Testa se a UI inicializa corretamente"""
