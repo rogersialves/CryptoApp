@@ -1,7 +1,8 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
-from ..config import STYLES, FONTS
+from kivy.metrics import dp
+from ..core.theme import STYLES, FONTS
 
 class BaseScreen(MDScreen):
     """Classe base para todas as telas do app"""
@@ -24,17 +25,16 @@ class BaseScreen(MDScreen):
             self.init_ui()
             self.initialized = True
     
-    def add_title(self, text: str):
-        """Adiciona título à tela"""
-        if self.main_layout is None:
-            print("Erro: Layout principal não inicializado")
-            return
-            
+    def add_title(self, text):
         title = MDLabel(
             text=text,
-            **FONTS["display"]
+            # Removendo font_style_name que não é uma propriedade válida
+            font_style="H5",  # Usando font_style ao invés de font_style_name
+            halign="center",
+            size_hint_y=None,
+            height=dp(50)
         )
-        self.main_layout.add_widget(title)
+        self.add_widget(title)
     
     def init_ui(self):
         """Método a ser sobrescrito pelas classes filhas"""

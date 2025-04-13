@@ -3,6 +3,7 @@ import sys
 import os
 from decimal import Decimal
 from datetime import datetime
+from pathlib import Path
 
 # Adiciona o diretório raiz ao PYTHONPATH
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -45,6 +46,18 @@ def populated_portfolio(test_portfolio):
         )
     return test_portfolio
 
+@pytest.fixture
+def temp_portfolio(tmp_path):
+    """Fixture que cria um portfolio temporário para testes"""
+    portfolio_file = tmp_path / "test_portfolio.json"
+    return Portfolio(file_path=portfolio_file)
+
+@pytest.fixture
+def sample_portfolio(tmp_path):
+    """Fixture que cria um portfolio de teste"""
+    portfolio = Portfolio(file_path=tmp_path / "test_portfolio.json")
+    return portfolio
+
 def test_add_transaction(test_portfolio):
     test_portfolio.add_transaction("BTC", Decimal("1.5"), Decimal("50000"))
     assert "BTC" in test_portfolio.holdings
@@ -73,6 +86,13 @@ def test_portfolio_persistence(test_portfolio, test_file):
     # Limpa o arquivo de teste
     if os.path.exists(test_file):
         os.remove(test_file)
+
+def test_portfolio_persistence(sample_portfolio):
+    """Testa persistência do portfolio"""
+    # Usar Decimal diretamente
+    amount = Decimal('1.5')
+    sample_portfolio.add_coin("BTC", amount)
+    assert sample_portfolio.holdings["BTC"] == amount
 
 def test_invalid_transaction(test_portfolio):
     """Testa o tratamento de transações inválidas"""
@@ -118,3 +138,24 @@ def test_load_invalid_file():
     # Limpa o arquivo de teste
     if os.path.exists(test_file):
         os.remove(test_file)
+
+def test_portfolio_initialization(temp_portfolio):
+    """Testa se o portfolio é inicializado corretamente"""
+    assert isinstance(temp_portfolio.holdings, dict)
+    assert len(temp_portfolio.holdings) == 0
+
+def test_add_transaction(temp_portfolio):
+    """Testa adição de transação"""
+    temp_portfolio.add_coin("BTC", Decimal("1.5"))
+    assert temp_portfolio.holdings["BTC"] == Decimal("1.5")
+
+def test_multiple_transactions(tmp_portfolio):
+    """Testa múltiplas transações"""
+    # Usa str para criar Decimal
+    amount1 = Decimal('1.5')
+    amount2 = Decimal('2.5')
+    
+    tmp_portfolio.add_coin("BTC", amount1)
+    tmp_portfolio.add_coin("BTC", amount2)
+    
+    assert tmp_portfolio.holdings["BTC"] == amount1 + amount2

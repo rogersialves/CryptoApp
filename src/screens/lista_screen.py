@@ -6,7 +6,7 @@ from kivymd.uix.label import MDLabel
 from kivy.uix.scrollview import ScrollView
 from kivymd.uix.button import MDIconButton
 from kivymd.uix.screen import MDScreen
-from src.config import STYLES
+from src.core.theme import STYLES  # Atualizado o import
 from src.screens.base_screen import BaseScreen
 from src.services.coingecko_service import CoinGeckoService
 

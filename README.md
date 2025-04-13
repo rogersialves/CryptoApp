@@ -37,12 +37,12 @@ Aplicativo de criptomoedas desenvolvido com Python, Kivy e KivyMD.
 
 4. Estrutura e Organização
    - Implementar padrão de injeção de dependências
-   - Criar gerenciamento de estado centralizado
+   - Criar gerenciamento de estado centralizado para facilitar a comunicação entre telas
    - Separar lógica de negócio da UI
    - Organizar constantes e configurações
 
 5. Infraestrutura
-   - Configurar CI/CD (GitHub Actions)
+   - Configurar CI/CD (GitHub Actions) para rodar testes e verificar qualidade do código automaticamente
    - Implementar versionamento semântico
    - Criar processo de build automatizado
    - Preparar para distribuição
@@ -60,7 +60,7 @@ Aplicativo de criptomoedas desenvolvido com Python, Kivy e KivyMD.
    - Criar testes de UI automatizados
 
 8. Otimização
-   - Implementar cache de dados
+   - Implementar cache de dados para chamadas frequentes à API do CoinGecko
    - Melhorar performance geral
    - Reduzir uso de memória
    - Otimizar chamadas de rede
@@ -129,6 +129,39 @@ CryptoApp/
 ├── requirements.txt          # Dependências do projeto
 ├── requirements-dev.txt      # Dependências de desenvolvimento
 └── main.py                  # Ponto de entrada do aplicativo
+```
+
+### Arquivos de Configuração
+
+#### `settings.py`
+Contém configurações globais do sistema:
+- URLs de API
+- Timeouts
+- Constantes do sistema
+- Configurações de ambiente
+- Paths do projeto
+- Configurações de cache
+
+#### `theme.py`
+Contém configurações específicas de UI/UX:
+- Estilos de tema (cores, paletas)
+- Definições de fontes
+- Configurações de espaçamento
+- Estilos de componentes (cards, botões)
+- Temas claro/escuro
+
+## Arquitetura
+
+### Core
+- `dependency_container.py`: Gerenciamento centralizado de dependências
+- `settings.py`: Configurações globais do sistema
+- `theme.py`: Configurações de interface do usuário
+
+### Serviços
+Os serviços são gerenciados através do DependencyContainer:
+```python
+container = DependencyContainer()
+service = container.get_service("coingecko")
 ```
 
 ### Descrição dos Diretórios
@@ -282,15 +315,111 @@ from kivy.logger import Logger
 Logger.setLevel('DEBUG')  # Níveis: DEBUG, INFO, WARNING, ERROR
 ```
 
+## Testes
+
+### Dependency Container
+O container de injeção de dependências foi testado com sucesso:
+- ✅ Padrão Singleton funcionando corretamente
+- ✅ Recuperação de serviços
+- ✅ Registro de novos serviços
+- ✅ Tratamento de serviços inexistentes
+
+### Executando os Testes
+```bash
+# Executar todos os testes
+python -m pytest
+
+# Executar testes específicos
+python -m pytest tests/test_dependency_container.py
+
+# Executar com cobertura
+python -m pytest --cov=src tests/
+```
+
+## 🧪 Testes
+
+### Testes de Tema e Estilo
+
+Os testes validam a configuração de temas e estilos da aplicação:
+
+```bash
+# Executar todos os testes
+python -m pytest -v
+
+# Executar testes específicos do tema
+python -m pytest tests/test_theme.py -v
+```
+
+#### Estrutura de Fonte
+- Validação de propriedades obrigatórias:
+  - font_name
+  - font_style 
+  - theme_text_color
+  - font_size
+
+#### Estilos Disponíveis
+- **Display**: H4, 34px
+- **Title**: H6, 20px  
+- **Body**: Body1, 16px
+- **Subtitle**: Subtitle1, 14px
+- **Caption**: Caption, 12px
+
+#### Cards
+Três variações de estilo para cards:
+- **Default**: Elevação padrão (1)
+- **Compact**: Padding e spacing reduzidos
+- **Elevated**: Maior elevação (3) e sombra
+
+### Executando os Testes
+
+```bash
+# Teste completo com cobertura
+python -m pytest --cov=src tests/
+
+# Teste com output detalhado
+python -m pytest -v --tb=short
+
+# Teste por módulo
+python -m pytest tests/test_ui.py -v
+python -m pytest tests/test_portfolio.py -v
+python -m pytest tests/test_pesquisa_screen.py -v
+```
+
+### Estrutura de Testes
+```
+tests/
+├── test_theme.py        # Testes de tema e estilo
+├── test_portfolio.py    # Testes do gerenciador de portfolio
+├── test_ui.py          # Testes de interface
+└── test_pesquisa_screen.py  # Testes da tela de pesquisa
+```
+
+## Próximos Passos
+
+1. **Implementar Serviços Adicionais**
+   - [ ] CryptoService para dados de mercado
+   - [ ] AlertService para notificações
+   - [ ] StorageService para persistência
+
+2. **Expandir Testes**
+   - [ ] Testes de integração entre serviços
+   - [ ] Testes de performance
+   - [ ] Mocks para chamadas de API
+
+3. **Melhorar Documentação**
+   - [ ] Adicionar docstrings em todos os serviços
+   - [ ] Criar guia de contribuição
+   - [ ] Documentar padrões de uso do DI
+
 ## Contribuição
 
 Por favor, leia o guia de contribuição antes de submeter pull requests.
 
 ## Contato
 
-- Email: seu-email@exemplo.com
+- Email: rogersialves@gmail.com
 - Discord: link-do-servidor
-- Twitter: @seu-usuario
+- Twitter: @rogersialves
 
 ## Licença
 

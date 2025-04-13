@@ -3,6 +3,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.list import MDList
 from kivymd.uix.label import MDLabel
+from kivymd.font_definitions import theme_font_styles
 from kivy.uix.widget import Widget  # Widget básico do Kivy
 from kivy.animation import Animation  # Para animação de rotação
 from kivy.properties import NumericProperty  # Para propriedade de rotação
@@ -10,7 +11,8 @@ from kivy.clock import Clock
 from functools import partial
 from typing import List, Optional
 import asyncio
-from ..config import STYLES, FONTS
+from src.core.theme import STYLES, FONTS, apply_font_style
+from src.api.crypto import search_crypto
 from .base_screen import BaseScreen
 
 # Widget personalizado para loading
@@ -32,121 +34,122 @@ class LoadingIndicator(Widget):
         if self._anim:
             self._anim.cancel(self)
 
-class PesquisaScreen(BaseScreen):
-    """Tela de pesquisa de criptomoedas"""
-    
+class PesquisaScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._search_trigger = Clock.create_trigger(self._do_search, .5)
-        self._last_search: Optional[str] = None
+        self._last_search = None
         self._cache = {}
-
-    def init_ui(self):
-        """Inicializa componentes específicos desta tela"""
-        self.add_title("Pesquisar Criptomoedas")
+        self._init_ui()
         
-        # Container principal
-        container = MDBoxLayout(
-            orientation="vertical",
-            adaptive_height=True,
-            spacing=STYLES["spacing"]["default"]
+    def _init_ui(self):
+        """Inicializa a interface"""
+        self.layout = MDBoxLayout(
+            orientation='vertical',
+            spacing=STYLES["spacing"]["default"],
+            padding=STYLES["padding"]["default"]
         )
         
-        # Campo de pesquisa atualizado
+        # Título - criando com configurações mínimas
+        self.title = MDLabel(text="Pesquisar")
+        
+        # Aplicando estilo em duas etapas
+        title_style = FONTS["title"]
+        self.title.font_size = title_style["font_size"]  # Define tamanho primeiro
+        apply_font_style(self.title, "title")  # Aplica outros estilos depois
+        
+        # Campo de pesquisa
         self.search_field = MDTextField(
-            hint_text="Pesquisar criptomoeda...",
-            mode="filled",  # Alterado de 'rectangle' para 'filled'
-            font_size="16sp",
-            size_hint_y=None,
-            height="48dp",
-            on_text=self.on_search,
-            pos_hint={"center_x": 0.5},
-            size_hint_x=0.9  # 90% da largura do container
+            hint_text="Digite o nome da moeda",
+            on_text_validate=self.on_search
         )
-        container.add_widget(self.search_field)
         
-        # Indicador de carregamento
-        self.loading_indicator = LoadingIndicator()
-        self.loading_indicator.opacity = 0
-        container.add_widget(self.loading_indicator)
+        self.layout.add_widget(self.title)
+        self.layout.add_widget(self.search_field)
         
         # Lista de resultados
-        self.results_list = MDList(
-            spacing=STYLES["spacing"]["small"],
-            padding=STYLES["padding"]["small"]
+        self.results_list = MDBoxLayout(
+            orientation='vertical',
+            spacing=STYLES["spacing"]["small"]
         )
-        container.add_widget(self.results_list)
+        self.layout.add_widget(self.results_list)
         
-        self.main_layout.add_widget(container)
-    
-    def on_search(self, instance, value: str):
-        """Gatilho de pesquisa com debounce"""
+        # Indicador de loading
+        self.loading_indicator = LoadingIndicator()
+        self.loading_indicator.opacity = 0
+        self.layout.add_widget(self.loading_indicator)
+        
+        self.add_widget(self.layout)
+
+    def on_search(self, instance, value: str = None):
+        """Callback quando texto é submetido"""
+        if value is None and instance:
+            value = instance.text
+            
         if len(value) < 2:
             self.update_results([])
             return
-        
+            
         self._last_search = value
-        self._search_trigger()
+        asyncio.create_task(self._do_search())
 
-    async def _do_search(self, *args):
-        """Executa a pesquisa de forma assíncrona"""
+    async def _do_search(self):
+        """Executa pesquisa assíncrona"""
+        query = self._last_search
+        
         try:
-            if not self._last_search:
-                return
-
-            # Verifica cache
-            if self._last_search in self._cache:
-                self.update_results(self._cache[self._last_search])
-                return
-
             self.show_loading(True)
             
-            # Chamada real à API (simulada nos testes)
-            from src.screens.pesquisa_screen import search_crypto
-            results = await search_crypto(self._last_search)
-            
-            # Atualiza cache e resultados
-            self._cache[self._last_search] = results
+            # Verifica cache
+            if query in self._cache:
+                self.update_results(self._cache[query])
+                return
+                
+            results = await search_crypto(query)
+            self._cache[query] = results
             self.update_results(results)
-
+            
         except Exception as e:
-            print(f"Erro na pesquisa: {e}")
-            self.show_error("Erro ao realizar pesquisa")
+            self.show_error(f"Erro de API: {str(e)}")  # Mantém mensagem de erro consistente
         finally:
             self.show_loading(False)
 
-    def update_results(self, results):
-        """Atualiza a lista de resultados"""
+    def update_results(self, results: List[dict]):
+        """Atualiza lista de resultados"""
         self.results_list.clear_widgets()
+        
         if not results:
-            self.results_list.add_widget(
-                MDLabel(
-                    text="Nenhum resultado encontrado",
-                    **FONTS["body"]
-                )
-            )
-    
-    def show_error(self, message: str):
-        """Exibe mensagem de erro"""
-        self.results_list.clear_widgets()
-        self.results_list.add_widget(
-            MDLabel(
-                text=message,
-                **{
-                    **FONTS["body"],  # Spread do dicionário base
-                    "theme_text_color": "Error"  # Sobrescreve o theme_text_color
-                }
-            )
-        )
+            error_label = MDLabel(text="Nenhum resultado encontrado")
+            apply_font_style(error_label, "body")
+            self.results_list.add_widget(error_label)
+            return
 
-    def show_loading(self, is_loading: bool):
+        for item in results:
+            result_label = MDLabel(
+                text=f"{item['symbol']} - {item['name']}"
+            )
+            apply_font_style(result_label, "body")
+            self.results_list.add_widget(result_label)
+
+    def show_loading(self, show: bool):
         """Controla visibilidade do loading"""
-        if is_loading:
-            self.loading_indicator.start()
+        if show:
             self.loading_indicator.opacity = 1
+            self.loading_indicator.start()
         else:
-            self.loading_indicator.stop()
             self.loading_indicator.opacity = 0
+            self.loading_indicator.stop()
+
+    def show_error(self, message: str):
+        """
+        Exibe mensagem de erro
+        Args:
+            message: Mensagem de erro para exibir
+        """
+        self.results_list.clear_widgets()
+        error_label = MDLabel(text=f"Erro: {message}")
+        apply_font_style(error_label, "body")
+        error_label.theme_text_color = "Error"  # Sobrescreve o tema para erro
+        self.results_list.add_widget(error_label)
 
 async def search_crypto(query: str) -> List[dict]:
     # TODO: Implementar

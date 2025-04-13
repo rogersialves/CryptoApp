@@ -1,0 +1,101 @@
+from kivymd.app import MDApp
+from kivymd.uix.screen import MDScreen
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.textfield import MDTextField
+from kivymd.uix.label import MDLabel
+from kivymd.uix.button import MDRaisedButton
+from decimal import Decimal
+from src.portfolio import Portfolio
+from src.core.theme import FONTS, STYLES, apply_font_style
+
+class CryptoAppUI(MDApp):
+    """Interface principal do aplicativo"""
+    def __init__(self, portfolio: Portfolio = None, **kwargs):
+        super().__init__(**kwargs)
+        self.portfolio = portfolio or Portfolio()
+        self._init_ui()
+        
+    def _init_ui(self):
+        """Inicializa componentes da interface"""
+        self.screen = MDScreen()
+        self.layout = MDBoxLayout(
+            orientation='vertical',
+            spacing=STYLES["spacing"]["default"],
+            padding=STYLES["padding"]["default"]
+        )
+        
+        # Campos de entrada
+        self.symbol_input = MDTextField(
+            hint_text="Símbolo (ex: BTC)",
+            helper_text="Digite o símbolo da moeda"
+        )
+        
+        self.amount_input = MDTextField(
+            hint_text="Quantidade",
+            helper_text="Digite um número válido"
+        )
+        
+        self.price_input = MDTextField(
+            hint_text="Preço",
+            helper_text="Digite o preço unitário"
+        )
+        
+        # Labels
+        self.status_label = MDLabel(text="")
+        apply_font_style(self.status_label, "body")
+        
+        self.holdings_label = MDLabel(text="Portfolio vazio")
+        apply_font_style(self.holdings_label, "body")
+        
+        # Botões
+        self.add_button = MDRaisedButton(
+            text="Adicionar",
+            on_release=self.add_transaction
+        )
+        
+        # Adiciona widgets ao layout
+        self.layout.add_widget(self.symbol_input)
+        self.layout.add_widget(self.amount_input)
+        self.layout.add_widget(self.price_input)
+        self.layout.add_widget(self.add_button)
+        self.layout.add_widget(self.status_label)
+        self.layout.add_widget(self.holdings_label)
+        
+        self.screen.add_widget(self.layout)
+        
+    def add_transaction(self, instance):
+        """Adiciona uma nova transação"""
+        try:
+            symbol = self.symbol_input.text.strip().upper()
+            amount = Decimal(self.amount_input.text)
+            price = Decimal(self.price_input.text)
+            
+            if not symbol:
+                raise ValueError("Símbolo não pode estar vazio")
+                
+            self.portfolio.add_transaction(symbol, amount, price)
+            self.update_view()
+            self.clear_inputs()
+            self.status_label.text = "Transação adicionada com sucesso"
+            
+        except (ValueError, InvalidOperation) as e:
+            self.status_label.text = f"Erro: {str(e)}"
+            
+    def update_view(self):
+        """Atualiza a visualização do portfolio"""
+        if not self.portfolio.holdings:
+            self.holdings_label.text = "Portfolio vazio"
+            return
+            
+        holdings_text = []
+        for symbol, data in self.portfolio.holdings.items():
+            holdings_text.append(
+                f"{symbol}: {data['amount']} @ {data['avg_price']}"
+            )
+        self.holdings_label.text = "\n".join(holdings_text)
+        
+    def clear_inputs(self):
+        """Limpa os campos de entrada"""
+        self.symbol_input.text = ""
+        self.amount_input.text = ""
+        self.price_input.text = ""

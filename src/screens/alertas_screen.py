@@ -3,7 +3,7 @@ from kivymd.uix.card import MDCard
 from kivymd.uix.label import MDLabel
 from kivymd.uix.boxlayout import MDBoxLayout
 from .base_screen import BaseScreen
-from ..config import STYLES, get_font_style, get_card_style  # Corrigido o caminho de importação
+from src.core.theme import STYLES, get_font_style, get_card_style  # Corrigido o caminho de importação
 
 
 class AlertListItem(MDCard):

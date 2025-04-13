@@ -2,7 +2,7 @@ from kivymd.uix.list import MDList
 from kivymd.uix.card import MDCard
 from kivymd.uix.label import MDLabel
 from kivymd.uix.boxlayout import MDBoxLayout
-from ..config import STYLES, FONTS
+from ..core.theme import STYLES, FONTS
 from .base_screen import BaseScreen
 
 # Base para todos os cards

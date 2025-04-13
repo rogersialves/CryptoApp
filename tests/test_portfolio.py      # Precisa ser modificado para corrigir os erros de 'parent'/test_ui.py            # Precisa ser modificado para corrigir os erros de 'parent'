@@ -1,0 +1,56 @@
+class TestPortfolio:
+    def test_portfolio_persistence(self):
+        # Implementar teste para persistência do portfólio
+        pass
+
+    def test_get_portfolio_summary(self):
+        # Implementar teste para resumo do portfólio
+        pass
+
+    def test_multiple_transactions(self):
+        # Implementar teste para múltiplas transações
+        pass
+
+    def test_load_invalid_file(self):
+        # Implementar teste para carregar arquivo inválido
+        pass
+
+
+class TestUI:
+    def test_add_transaction_via_ui(self):
+        # Implementar teste para adicionar transação via UI
+        pass
+
+    def test_ui_update(self):
+        # Implementar teste para atualização da UI
+        pass
+
+
+class TestPesquisaScreen:
+    def test_init_screen(self):
+        # Implementar teste para inicialização da tela de pesquisa
+        pass
+
+    def test_search_validation(self):
+        # Implementar teste para validação de busca
+        pass
+
+    def test_empty_results(self):
+        # Implementar teste para resultados vazios
+        pass
+
+    def test_loading_indicators(self):
+        # Implementar teste para indicadores de carregamento
+        pass
+
+    def test_error_handling(self):
+        # Implementar teste para tratamento de erros
+        pass
+
+    def test_do_search_cache(self):
+        # Implementar teste para cache de busca
+        pass
+
+    def test_do_search_error(self):
+        # Implementar teste para erro de busca
+        pass

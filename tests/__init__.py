@@ -1,3 +1,5 @@
+"""Pacote de testes da aplicação"""
+
 import sys
 import os
 

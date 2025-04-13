@@ -1,26 +1,31 @@
 import os
-from pathlib import Path
+os.environ['KIVY_DEBUG'] = '1'
 from kivy.logger import Logger
+Logger.setLevel('DEBUG')
+
 from kivy.lang import Builder
-from kivy.core.window import Window
 from kivymd.app import MDApp
 from src.portfolio import Portfolio
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivymd.uix.navigationdrawer import (
+    MDNavigationLayout,
+    MDNavigationDrawer,
+    MDNavigationDrawerMenu,
+    MDNavigationDrawerHeader,
+    MDNavigationDrawerItem,
+    MDNavigationDrawerDivider
+)
 from src.screens.lista_screen import ListaScreen
 from src.screens.portfolio_screen import PortfolioScreen
 from src.screens.alertas_screen import AlertasScreen
 from src.screens.pesquisa_screen import PesquisaScreen
 from src.screens.noticias_screen import NoticiasScreen
 from src.screens.conversor_screen import ConversorScreen
+from pathlib import Path
 
-# Configuração de logging
-os.environ['KIVY_DEBUG'] = '1'
-Logger.setLevel('DEBUG')
-
-# Interface KV
 KV = '''
 MDScreen:
     md_bg_color: app.colors['background']
-    
     MDNavigationLayout:
         ScreenManager:
             id: screen_manager
@@ -125,11 +130,12 @@ class CryptoApp(MDApp):
             'surface': [1, 1, 1, 1],             # Branco
             'text': [0.1, 0.1, 0.1, 1]          # Texto escuro
         }
-        
-        # Configuração inicial do tamanho da janela
-        Window.size = (400, 700)  # Tamanho típico de smartphone
 
     def build(self):
+        # Configura tamanho padrão para mobile
+        from kivy.core.window import Window
+        Window.size = (400, 700)  # Tamanho típico de smartphone
+        
         try:
             # Inicializa o portfolio primeiro
             if not self.portfolio:

@@ -1,1 +1,4 @@
-# Arquivo vazio para marcar o diretório como pacote Python
+"""Package principal da aplicação"""
+from .config import *
+
+__version__ = "0.1.0"
