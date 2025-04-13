@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Ambiente Virtual
+venv/
+ENV/
+
+# Coverage
+.coverage
+coverage.xml
+htmlcov/
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# Arquivos de dados
+*.json
+!test_data/*.json
+
+# Logs
+*.log
+
+# Cache
+.pytest_cache/
+.mypy_cache/
